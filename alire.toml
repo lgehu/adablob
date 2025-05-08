@@ -1,0 +1,18 @@
+name = "adablob"
+description = "Utility tool to flash any data into the board flash"
+version = "0.1.0-dev"
+
+authors = ["lauric"]
+maintainers = ["lauric <lauric_gehu@etu.u-bourgogne.fr>"]
+maintainers-logins = ["lgehu"]
+licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
+website = ""
+tags = []
+
+executables = ["adablob"]
+
+[[depends-on]]
+nucleo_f446re = "~0.1.0-dev"
+
+[[pins]]
+nucleo_f446re = { path='../alr_adl_crates/nucleo_f446re' }
