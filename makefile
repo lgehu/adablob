@@ -1,4 +1,5 @@
 MAIN ?= adablob
+DATABLOB=datablob
 #PRJ_NAME ?= ecg_sensor
 
 # Toolchain
@@ -18,11 +19,13 @@ all: compile flash
 # Compile the project
 compile:
 	alr build -- -XMAIN=$(MAIN) -v 
-	alr exec -- $(OBJCOPY) -O binary $(BIN_DIR)/$(MAIN) $(BIN_DIR)/$(MAIN).bin
+	alr exec -- arm-eabi-gcc -nostartfiles -Wl,-T linker/linker_script.ld -o bin/$(DATABLOB) obj/$(DATABLOB).o -Wl,'--defsym=DATA_ADDR=$(ADDR)'
+	alr exec -- arm-eabi-objcopy -O binary -j .custom_data bin/$(DATABLOB) bin/$(DATABLOB).bin
+	# alr exec -- $(OBJCOPY) -O binary $(BIN_DIR)/$(MAIN) $(BIN_DIR)/$(MAIN).bin
 
 # Flash the binary to the board
 flash:
-	$(STFLASH) write $(BIN_DIR)/$(MAIN).bin $(ADDR)
+	$(STFLASH) write $(BIN_DIR)/$(DATABLOB).bin $(ADDR)
 
 # Clean build artifacts
 clean:

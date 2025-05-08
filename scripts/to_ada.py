@@ -26,18 +26,19 @@ package {package_name} is
 end {package_name};
                 ''')
 
-def generate_adb(input_file, output_file, isWFDB, package_name, data):
+def generate_blob(input_file, output_file, array_type, isWFDB, data):
     
     # Open the Ada output file
-    with open(output_file + ".adb", "w") as f:
+    with open("src/datablob.ads", "w") as f:
         
-        f.write("with Interfaces;\n")
+        f.write("with Interfaces; use Interfaces;\n")
         if isWFDB:
             f.write('use type Interfaces.IEEE_Float_32;\n')
 
         f.write(f'-- This file was generated with {os.path.basename(__file__)}\n')
         f.write(f"-- File from {input_file}\n")
-        f.write(f"package body {package_name} is\n")
+        f.write(f"package DataBlob is\n")
+        f.write(f"   type Data_Type is array (Positive range <>) of {array_type};\n")
         f.write("   Blob : Data_Type := (\n")
       
         # Write the binary content in Ada array form
@@ -57,7 +58,7 @@ def generate_adb(input_file, output_file, isWFDB, package_name, data):
     );
     pragma Linker_Section (Blob, \".custom_data\");
     pragma Export (Ada, Blob, \"custom_data\");
-end {package_name};
+end DataBlob;
                 """)
 
 def read_file(input_file, array_type, isWFDB):
@@ -99,5 +100,5 @@ if __name__ == "__main__":
     
     data = read_file(args.input_file, args.array_type, args.wfdb)
 
-    generate_adb(args.input_file, args.output_file, args.wfdb, args.package_name, data)
+    generate_blob(args.input_file, args.output_file, args.array_type, args.wfdb, data)
     generate_ads(args.input_file, args.output_file, args.package_name, len(data), 100, args.array_type)

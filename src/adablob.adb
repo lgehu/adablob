@@ -1,6 +1,6 @@
-with AdaData;
+with DataBlob; use DataBlob;
 
-procedure Adablob is
+procedure Main is
 begin
    null;
-end Adablob;
+end Main;

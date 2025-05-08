@@ -1,9 +1,12 @@
-.custom_data:
-{
-    KEEP(*(.custom_data))
-} >DATA_FLASH
 
-MEMORY
-{
-  DATA_FLASH (rx)  : ORIGIN = 0x08060000, LENGTH = 64K
+SECTIONS {
+  . = DATA_ADDR;
+  .custom_data :
+  {
+    KEEP(*(.custom_data))
+  } > FLASH
+}
+
+MEMORY {
+  FLASH (rx) : ORIGIN = DATA_ADDR, LENGTH = 0x1000
 }

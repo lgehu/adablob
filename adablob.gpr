@@ -18,7 +18,11 @@ project Adablob is
       for Default_Switches ("Ada") use (
          "-O2",
          "-gnat2022",
-         "-T", "linker/linker_script.ld"
+         "-T", "linker/linker_script.ld",
+         "-gnatn",      -- désactive la génération d'informations de type (debug info) pour les exceptions
+         "-fno-asynchronous-unwind-tables",
+         "-fno-unwind-tables",
+         "-fno-exceptions"
       );
 
    end Compiler;
