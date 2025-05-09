@@ -104,4 +104,4 @@ if __name__ == "__main__":
     generate_ads(args.input_file, args.output_file, args.package_name, len(data), 100, args.array_type)
 
     if args.run:
-        os.system(f"make ADDR={args.addr}")
+        os.system(f"make ADDR={args.addr} DATA_LENGTH={len(data)}")

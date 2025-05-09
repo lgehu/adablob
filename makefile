@@ -1,5 +1,5 @@
 MAIN ?= adablob
-DATABLOB=datablob
+DATABLOB = datablob
 #PRJ_NAME ?= ecg_sensor
 
 # Toolchain
@@ -12,6 +12,7 @@ BUILD_DIR = obj
 BIN_DIR = bin
 
 ADDR ?= 0x08060000
+DATA_LENGTH ?= 4096
 
 # Default target
 all: compile flash
@@ -19,7 +20,7 @@ all: compile flash
 # Compile the project
 compile:
 	alr build -- -XMAIN=$(MAIN) -v 
-	alr exec -- arm-eabi-gcc -nostartfiles -Wl,-T linker/linker_script.ld -o bin/$(DATABLOB) obj/$(DATABLOB).o -Wl,'--defsym=DATA_ADDR=$(ADDR)'
+	alr exec -- arm-eabi-gcc -nostartfiles -Wl,-T linker/linker_script.ld -o bin/$(DATABLOB) obj/$(DATABLOB).o -Wl,'--defsym=DATA_ADDR=$(ADDR)' -Wl,'--defsym=DATA_LENGTH=$(DATA_LENGTH)'
 	alr exec -- arm-eabi-objcopy -O binary -j .custom_data bin/$(DATABLOB) bin/$(DATABLOB).bin
 	# alr exec -- $(OBJCOPY) -O binary $(BIN_DIR)/$(MAIN) $(BIN_DIR)/$(MAIN).bin
 
