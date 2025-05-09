@@ -1,0 +1,23 @@
+MAIN ?= adablob
+DATABLOB=datablob
+#PRJ_NAME ?= ecg_sensor
+
+# Toolchain
+CC = arm-eabi-gcc
+OBJCOPY = arm-eabi-objcopy
+STFLASH = st-flash
+
+# Build directory
+BUILD_DIR = obj
+BIN_DIR = bin
+
+ADDR ?= 0x08060000
+
+# Default target
+all: compile flash
+
+# Compile the project
+compile:
+	alr build -- -XMAIN=$(MAIN) -v 
+	alr exec -- arm-eabi-gcc -nostartfiles -Wl,-T linker/linker_script.ld -o bin/$(DATABLOB) obj/$(DATABLOB).o -Wl,'--defsym=DATA_ADDR=$(ADDR)'
+	alr exec -- 

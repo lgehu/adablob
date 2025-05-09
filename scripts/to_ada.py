@@ -26,19 +26,16 @@ package {package_name} is
 end {package_name};
                 ''')
 
-def generate_blob(input_file, output_file, array_type, isWFDB, data):
+def generate_blob(input_file, data):
     
     # Open the Ada output file
     with open("src/datablob.ads", "w") as f:
         
         f.write("with Interfaces; use Interfaces;\n")
-        if isWFDB:
-            f.write('use type Interfaces.IEEE_Float_32;\n')
-
         f.write(f'-- This file was generated with {os.path.basename(__file__)}\n')
         f.write(f"-- File from {input_file}\n")
         f.write(f"package DataBlob is\n")
-        f.write(f"   type Data_Type is array (Positive range <>) of {array_type};\n")
+        f.write(f"   type Data_Type is array (Positive range <>) of Unsigned_8;\n")
         f.write("   Blob : Data_Type := (\n")
       
         # Write the binary content in Ada array form
@@ -61,7 +58,7 @@ def generate_blob(input_file, output_file, array_type, isWFDB, data):
 end DataBlob;
                 """)
 
-def read_file(input_file, array_type, isWFDB):
+def read_file(input_file, isWFDB):
     data = []
     if isWFDB:
         signals, fields = wfdb.rdsamp(input_file, channels=[0])
@@ -87,6 +84,9 @@ def parse_args():
     parser.add_argument("-at", "--array-type", 
                         help="Available type defined in the interfac.ads file (Ada Runtime).",
                         default="Unsigned_8")
+    parser.add_argument("-r", "--run",
+                        action='store_true',
+                        help="Run make right after to compile and flash the generated data")
     parser.add_argument("-w", "--wfdb", 
                         action='store_true',
                         help="Read the input file as a wfdb file. " \
@@ -98,7 +98,10 @@ if __name__ == "__main__":
 
     args = parse_args()
     
-    data = read_file(args.input_file, args.array_type, args.wfdb)
+    data = read_file(args.input_file, args.wfdb)
 
-    generate_blob(args.input_file, args.output_file, args.array_type, args.wfdb, data)
+    generate_blob(args.input_file, data)
     generate_ads(args.input_file, args.output_file, args.package_name, len(data), 100, args.array_type)
+
+    if args.run:
+        os.system(f"make ADDR={args.addr}")
