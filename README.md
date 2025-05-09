@@ -13,8 +13,8 @@ First, you will have to transform your data to an ada array in order to be compi
 Example: `python3 scripts/to_ada.py alire.toml src/adadata AdaData 0x08060000 --array-type Unsigned_8`  
 Here, the script reads the entire file 'alire.tom' and place it to an ada array of Unsigned_8.  
 The array-type don't affect your data but is used to generate an .ads file to access your data.  
-Then, the data will be placed at the adress 0x08060000. According to the F446RE board, it is the last available sector of the flash.  
-For your usage, make sure the address is on an available sector with enough space and that it won't be overwritten by further compilation. 
+Then, the data will be placed at the adress 0x08060000. According to the F446RE board, it is the last available sector of the flash. 
+For your usage, make sure the address is aligned to an available sector with enough space. 
 The script will generate two files:  
 - datablob.ads which contain your data.
 - adadata.ads which define constants to access your data. You can copy this file into your project.
