@@ -1,6 +1,5 @@
 MAIN ?= adablob
 DATABLOB = datablob
-DATAFILE ?= 
 #PRJ_NAME ?= ecg_sensor
 
 # Toolchain
@@ -20,9 +19,10 @@ all: compile flash
 
 # Compile the project
 compile:
-	st-flash write $(DATAFILE) $(ADDR)
-	#alr exec -- $(OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.rodata $(DATAFILE) $(BUILD_DIR)/$(DATAFILE).o
-	#alr exec -- $(OBJCOPY) -O binary $(BUILD_DIR)/$(DATAFILE).o $(BIN_DIR)/a.bin
+	alr build -- -XMAIN=$(MAIN) -v 
+	alr exec -- arm-eabi-gcc -nostartfiles -Wl,-T linker/linker_script.ld -o bin/$(DATABLOB) obj/$(DATABLOB).o -Wl,'--defsym=DATA_ADDR=$(ADDR)' -Wl,'--defsym=DATA_LENGTH=$(DATA_LENGTH)'
+	alr exec -- arm-eabi-objcopy -O binary -j .custom_data bin/$(DATABLOB) bin/$(DATABLOB).bin
+	# alr exec -- $(OBJCOPY) -O binary $(BIN_DIR)/$(MAIN) $(BIN_DIR)/$(MAIN).bin
 
 # Flash the binary to the board
 flash:

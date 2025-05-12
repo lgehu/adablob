@@ -34,4 +34,14 @@ Or check that your data are in the board with:
 st-flash read dump.bin 0x08060000 434
 hexdump -C dump.bin 
 ```
-Or `od -f dump.bin` to display float numbers. 
+Or `od -f dump.bin` to display float numbers.
+
+## Without python scripts
+We found out that we can just flash the board with any file.  
+Indeed, it appears that the command line st-flash write [file] [ADDR] support any file type to be transmitted. Whish we tried that sooner.  
+We added the script flash.sh that take files as input, concatenate them and flash to the board.
+
+## Remarks
+On the st-flash v1.8.0, `st-flash --area=otp read dump` is not implemented.  
+But `st-flash --area=option read dump`  
+and `st-flash --area=system read dump 0x1FFF0000 30KB` works.
