@@ -26,7 +26,7 @@ package {package_name} is
 end {package_name};
                 ''')
 
-def generate_blob(input_file, data):
+def generate_blob(input_file, data, array_type):
     
     # Open the Ada output file
     with open("src/datablob.ads", "w") as f:
@@ -35,7 +35,7 @@ def generate_blob(input_file, data):
         f.write(f'-- This file was generated with {os.path.basename(__file__)}\n')
         f.write(f"-- File from {input_file}\n")
         f.write(f"package DataBlob is\n")
-        f.write(f"   type Data_Type is array (Positive range <>) of Unsigned_8;\n")
+        f.write(f"   type Data_Type is array (Positive range <>) of {array_type};\n")
         f.write("   Blob : Data_Type := (\n")
       
         # Write the binary content in Ada array form
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     
     data = read_file(args.input_file, args.wfdb)
 
-    generate_blob(args.input_file, data)
+    generate_blob(args.input_file, data, args.array_type)
     generate_ads(args.input_file, args.output_file, args.package_name, len(data), 100, args.array_type)
 
     if args.run:
