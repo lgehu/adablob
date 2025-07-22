@@ -2,8 +2,8 @@
 import sys
 import os
 import argparse
-import wfdb
 import struct
+import pickle
 
 def generate_ads(input_file, output_file, package_name, datalen, sample_rate, array_type):
     with open(output_file + ".ads", 'w') as f:
@@ -61,6 +61,7 @@ end DataBlob;
 def read_file(input_file, isWFDB):
     data = []
     if isWFDB:
+        import wfdb
         signals, fields = wfdb.rdsamp(input_file, channels=[0])
         sample_rate = fields['fs']
         print(fields)
@@ -69,6 +70,11 @@ def read_file(input_file, isWFDB):
             #bb = struct.pack('>h', int(sig[0] * 1000))
             #data.append(bb[0])
             #data.append(bb[1])
+    elif input_file.endswith(".mat"):
+        import scipy.io
+        mat = scipy.io.loadmat(input_file)
+        for i in mat['subdata']:
+            data.append(i[0])
     else:
         with open(input_file, "rb") as f:
             data = f.read()
@@ -91,17 +97,29 @@ def parse_args():
                         action='store_true',
                         help="Read the input file as a wfdb file. " \
                         "File extension must be omitted. ")
+    parser.add_argument("--ads-only", action='store_true', 
+                        help="No adadata.adb will be generated. Instead, generate a binary file which will be directly flash")
 
     return parser.parse_args()
 
+def generate_bin_file(output_file : str, data):
+    with open(output_file + ".bin", "wb") as f:
+        f.write(pickle.dump(data))
+        f.flush()
+        
 if __name__ == "__main__":
 
     args = parse_args()
     
     data = read_file(args.input_file, args.wfdb)
 
-    generate_blob(args.input_file, data, args.array_type)
     generate_ads(args.input_file, args.output_file, args.package_name, len(data), 100, args.array_type)
-
-    if args.run:
-        os.system(f"make ADDR={args.addr} DATA_LENGTH={len(data)}")
+    
+    if not args.ads_only:
+        generate_blob(args.input_file, data, args.array_type)
+        if args.run:
+            os.system(f"make ADDR={args.addr} DATA_LENGTH={len(data)}")
+    else:
+        generate_bin_file(args.output_file, data)
+        if args.run:
+            os.system(f"st-flash write {args.output_file + ".bin"} {args.addr}")
